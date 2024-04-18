@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="paint.css">
+<body onload="start()">
+<ul>
+  <li><button id="rect">四角形枠</button></li>
+  <li><button id="free">鉛筆</button></li>
+  <li><button id="delete">削除</button></li>
+  <li><button id="save">画像出力</button></li>
+  <li><input  id="color" type="color" value="#000000"></li>
+</ul>
+
+<canvas id="canvas" width="1500" height="1000"></canvas>
+<div style="clear: both;"></div>
+
+<script>
+
+    function start() {
+        const canvas  = document.querySelector('#canvas');
+        const context = canvas.getContext('2d');
+
+        let startX;  
+        let startY; 
+        let endX;    
+        let endY;    
+        let tool = 'rect'; 
+
+
+        document.querySelector('#rect').addEventListener('click', function(e) {
+            tool = 'rect';  //切り換え
+        });
+
+        document.querySelector('#free').addEventListener('click', function(e) {
+            tool = 'free';  // 切り換え
+        });
+
+        document.querySelector('#delete').addEventListener('click', function(e) {
+            context.clearRect(0, 0, canvas.width, canvas.height);  
+        });
+
+
+        document.querySelector('#save').addEventListener('click', function(e) {
+            const dataURL = canvas.toDataURL('image/png');
+            const img = new Image();                 
+            img.src = canvas.toDataURL('image/png');  
+            document.body.appendChild(img);         
+        });
+
+        // 色変更
+        document.querySelector('#color').addEventListener('change', function(e) {
+            context.strokeStyle = e.target.value; 
+        });
+
+
+        // マウスを下げた時 
+        canvas.addEventListener('mousedown', function(e) {
+       
+            const rect = e.target.getBoundingClientRect(); 
+            startX = e.clientX - rect.left; 
+            startY = e.clientY - rect.top;  
+
+            if (tool === 'rect') { startRect() } 
+            if (tool === 'free') { startFree() }  
+        });
+
+
+        function startRect() {
+            canvas.addEventListener('mousemove', moveRect);
+            canvas.addEventListener('mouseup',   endRect);
+        }
+
+        // 四角形でマウスを移動した時
+        function moveRect(e) {
+            const rect = e.target.getBoundingClientRect(); 
+            endX = e.clientX - rect.left;  
+            endY = e.clientY - rect.top; 
+        }
+
+        function endRect(e) {
+            context.strokeRect(startX, startY, endX - startX, endY - startY);
+
+            canvas.removeEventListener('mousemove', moveRect);
+            canvas.removeEventListener('mouseup',   endRect);
+        }
+
+
+        function startFree() {
+            canvas.addEventListener('mousemove', moveFree);
+            canvas.addEventListener('mouseup',   endFree);
+
+            context.beginPath();
+        }
+
+        function moveFree(e){
+            var rect = e.target.getBoundingClientRect(); 
+            endX = e.clientX - rect.left;  
+            endY = e.clientY - rect.top;   
+
+            context.lineTo(endX, endY);
+            context.stroke();
+        }
+
+        // 鉛筆描画でマウスを上げた時
+        function endFree(e) {
+            canvas.removeEventListener('mousemove', moveFree);
+            canvas.removeEventListener('mouseup',   endFree);
+        }
+    };
+
+</script>
+</head>
+</body>
+</html>
