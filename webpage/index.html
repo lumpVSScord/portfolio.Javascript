@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" contaent="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>canvas site</title>
+    <link rel="stylesheet" href="style.css">
+    
+</head>
+<body onload="start()">
+
+<canvas id="cnavasAnim"></canvas>
+
+<div id="doc"></div>
+    
+<script>
+
+    function start() {
+        const t = '';
+        document.querySelector('#doc').innerText = t.repeat(1000);
+
+        const canvas  = document.querySelector('#cnavasAnim');
+        const context = canvas.getContext('2d');
+
+        const w = canvas.width  = window.innerWidth;   
+        const h = canvas.height = window.innerHeight;  
+     
+        const animArr = [];
+        for (let i = 0; i < 100; i ++) {
+            animArr[i] = {
+                x: Math.random() * w,  
+                y: Math.random() * h   
+            };
+        }
+
+        const img = new Image();  
+        img.src = 'bubble.jpeg'; 
+
+ 
+        img.addEventListener('load', function(e) {
+         
+            setInterval(function() {
+            
+                context.clearRect(0, 0, w, h);
+
+                for (let i = 0; i < animArr.length; i ++) {
+
+                    const a = animArr[i];
+                    const size = i / animArr.length * 100;
+
+                    context.drawImage(img,  
+                        0, 0, img.width, img.height,  
+                        a.x, a.y, size, size  
+                    );
+
+                    
+                    a.y -= 0.5;
+                    if (a.y < 0) { a.y += h }  // ループ
+                }
+            }, 10);
+        });
+    };
+
+</script>
+
+</body>
+
+</html>
+
+</html>
